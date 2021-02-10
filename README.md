@@ -16,6 +16,10 @@ Install the package with npm:
 
 `npm i simple-i18n`
 
+Well, not yet... I'll turn it into a package in a few days. Until then:
+
+`npm i https://github.com/tomcatmwi/simple-i18n`
+
 # How to use #
 
 Create an instance of the `SimpleI18n` object in your JavaScript or TypeScript project:
