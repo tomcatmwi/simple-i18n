@@ -1,0 +1,46 @@
+{
+    "en-CA": {
+        "i18n": {
+            "locale": {
+                "currencyCode": "USD",
+                "currencySymbol": "$",
+                "dateFormat": "MM/DD/YYYY",
+                "decimalSeparator": ".",
+                "thousandsSeparator": ","
+            },
+            "name_english": "English (US)",
+            "name_native": "English (US)"
+        },
+        "test": "This is an English string",
+        "hello": "Hello, {{ name }}!"
+    },
+    "fr-FR": {
+        "i18n": {
+            "locale": {
+                "currencyCode": "EUR",
+                "currencySymbol": "€",
+                "dateFormat": "DD-MM-YYYY",
+                "decimalSeparator": ",",
+                "thousandsSeparator": " "
+            },
+            "name_english": "French (FR)",
+            "name_native": "Français (FR)"
+        },
+        "test": "Ceci est une string française",
+        "hello": "Salut, {{ name }}!"
+    },
+    "fr-CA": {
+        "i18n": {
+            "fallback": "fr-FR",
+            "locale": {
+                "currencyCode": "CAD",
+                "currencySymbol": "$",
+                "dateFormat": "YYYY-MM-DD",
+                "decimalSeparator": ",",
+                "thousandsSeparator": " "
+            },
+            "name_english": "French (CA)",
+            "name_native": "Français (CA)"
+        }
+    }
+}

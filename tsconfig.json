@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+        "outDir": "./",
+        "target": "es5",
+        "lib": [
+            "esnext"
+        ],
+        "moduleResolution": "node",
+        "baseUrl": ".",
+        "allowJs": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "forceConsistentCasingInFileNames": true,
+        "module": "esnext",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noFallthroughCasesInSwitch": true,
+        "allowUnreachableCode": true,
+        "strict": true,
+        "strictNullChecks": false,
+        "noImplicitAny": false
+    },
+    "files": [
+        "./index.ts",
+        "./i18n_default.json"
+    ]
+}

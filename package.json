@@ -1,0 +1,25 @@
+{
+  "name": "simple-i18n",
+  "version": "1.0.0",
+  "description": "A simple framework-independent JavaScript/Typescript i18n engine",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "i18n",
+    "internationalization",
+    "localization",
+    "localisation",
+    "localize",
+    "localise",
+    "multilingual",
+    "language",
+    "loco"
+  ],
+  "author": "Tomcat^MWI",
+  "license": "ISC",
+  "dependencies": {
+    "events": "^3.2.0"
+  }
+}
