@@ -1,5 +1,5 @@
 {
-  "name": "simple-i18n",
+  "name": "@tomcatmwi/simple-i18n",
   "version": "1.0.0",
   "description": "A simple framework-independent JavaScript/Typescript i18n engine",
   "main": "index.js",

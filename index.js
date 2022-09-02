@@ -90,8 +90,8 @@ var SimpleI18n = /** @class */ (function () {
             Object.keys(this.i18n).forEach(function (lang) {
                 languages.push({
                     id: lang,
-                    name_english: _this.i18n[lang].i18n.name_english,
-                    name_native: _this.i18n[lang].i18n.name_native,
+                    nameEnglish: _this.i18n[lang].i18n.nameEnglish,
+                    nameNative: _this.i18n[lang].i18n.nameNative,
                     default: lang.toLowerCase() === _this.defaultLanguage.toLowerCase(),
                     fallback: _this.i18n[lang].i18n.fallback || null
                 });

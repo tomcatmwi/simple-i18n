@@ -1,16 +1,27 @@
 import defaultI18n from './i18n_default.json';
 import EventEmitter from 'events';
 
+/**
+ * Interface to return the list of languages
+ * @interface LanguageListItem
+ **/
 export interface LanguageListItem {
     id: string;
-    name_english: string;
-    name_native: string;
+    nameEnglish: string;
+    nameNative: string;
     default: boolean;
     fallback?: string;
 }
 
+/**
+ * Interface to represent locale information
+ * @interface Locale
+ **/
 export interface Locale {
     localeCode?: string;
+    fallback?: string;
+    nameEnglish: string;
+    nameNative: string;    
     dateFormat: string;
     currencySymbol: string;
     currencyCode: string;
@@ -33,12 +44,26 @@ export default class SimpleI18n {
     private currentLanguage: string = 'en-US';
 
     //  The currently selected locale
-    private currentLocale: Locale;
+    private currentLocale: Locale = {
+        "currencyCode": "USD",
+        "currencySymbol": "$",
+        "dateFormat": "mm/dd/yyyy",
+        "decimalSeparator": ".",
+        "thousandsSeparator": ",",
+        "fallback": null,
+        "nameEnglish": "English (USA)",
+        "nameNative": "English (USA)"
+    };
 
     //  The default language and locale, set by the constructor
-    private defaultLanguage: string;
+    private defaultLanguage: string = 'en-US';
     private defaultLocale: Locale;
 
+    /**
+     * Constructor
+     * @param defaultLanguage Default language code, eg. 'fr-CA'
+     * @param i18n An object with localization strings
+    **/
     constructor(
         defaultLanguage?: string,
         i18n?: Object
@@ -56,7 +81,12 @@ export default class SimpleI18n {
         this.defaultLocale = this.locale;
     }
 
-    //  Switches to a new language
+    /**
+     * Changes the current language. 
+     * If it doesn't exist, it switches to the default language.
+     * If the new language has a fallback, it will switch to the fallback language.
+     * @param languageCode - the code of the language, ie. 'en-US', 'es-MX', 'fr-CA'
+    **/
     public set language(languageCode: string) {
 
         //  Get new language code
@@ -70,31 +100,39 @@ export default class SimpleI18n {
         //  Get new locale
         let currentLocale: Locale = this.defaultLocale;
 
-        if (this.i18n.hasOwnProperty(languageCode) && this.i18n[languageCode].i18n.locale)
-            currentLocale = { localeCode: languageCode, ...this.i18n[languageCode].i18n.locale }
+        if (this.i18n.hasOwnProperty(languageCode) && this.i18n[languageCode].hasOwnProperty('i18n'))
+            currentLocale = { localeCode: languageCode, ...this.i18n[languageCode].i18n }
 
-        else if (this.i18n.hasOwnProperty(currentLanguage) && this.i18n[currentLanguage].i18n.locale)
-            currentLocale = { localeCode: currentLanguage, ...this.i18n[currentLanguage].i18n.locale }
+        else if (this.i18n.hasOwnProperty(currentLanguage) && !!this.i18n[currentLanguage].hasOwnProperty('i18n'))
+            currentLocale = { localeCode: currentLanguage, ...this.i18n[currentLanguage].i18n }
 
-        // if (currentLanguage !== this.currentLanguage)
         this.events.emit('switchLanguage', currentLanguage);
         this.events.emit('switchLocale', currentLocale);
 
         this.currentLanguage = currentLanguage;
         this.currentLocale = currentLocale;
-
     }
 
-    //  Gets the current language
+    /**
+    * Getter: returns the current language code
+    * @type (string)  
+    **/
     public get language(): string {
         return this.currentLanguage;
     }
 
+    /**
+    * Getter: returns the current locale object
+    * @type (Locale)  
+    **/    
     public get locale(): Locale {
         return this.currentLocale;
     }
 
-    //  Returns the list of available languages
+    /**
+    * Returns the list of available languages
+    * @type (LanguageListItem[])  
+    **/        
     public get languages(): LanguageListItem[] {
 
         const languages: LanguageListItem[] = [];
@@ -102,8 +140,8 @@ export default class SimpleI18n {
         Object.keys(this.i18n).forEach(lang => {
             languages.push({
                 id: lang,
-                name_english: this.i18n[lang].i18n.name_english,
-                name_native: this.i18n[lang].i18n.name_native,
+                nameEnglish: this.i18n[lang].i18n.nameEnglish,
+                nameNative: this.i18n[lang].i18n.nameNative,
                 default: lang.toLowerCase() === this.defaultLanguage.toLowerCase(),
                 fallback: this.i18n[lang].i18n.fallback || null
             });
@@ -114,7 +152,12 @@ export default class SimpleI18n {
         );
     }
 
-    //  Translates a string
+    /**
+    * Translates a string
+    * @param assetId Asset ID of the string
+    * @param values Key-value list of values to be replaced in the string
+    * @returns (string)  
+    **/ 
     public translate = (assetId: string, values?: any): string => {
 
         if (!assetId) return;

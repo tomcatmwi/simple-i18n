@@ -1,12 +1,12 @@
 # Simple i18n #
 
-A platform and framework independent NPM dependency for simple and easy internationalization. Use it for any frontend or backend (Node) project.
+A platform and framework independent NPM package for simple and easy internationalization.
 
 Supports:
 
 - string translations
 - placeholders for variables
-- locales
+- date, currency and separator locales
 - instant language switching
 - language fallbacks
 
@@ -14,11 +14,7 @@ Supports:
 
 Install the package with npm:
 
-`npm i simple-i18n`
-
-Well, not yet... I'll turn it into a package in a few days. Until then:
-
-`npm i https://github.com/tomcatmwi/simple-i18n`
+`npm i @tomcatmwi/simple-i18n`
 
 # How to use #
 
@@ -32,7 +28,11 @@ const i18n = new SimpleI18n();
 console.log(i18n.translate('test'));
 ```
 
-This will display a test string from the default translation file. However, you probably want your own translations. To use your own translation file:
+This will display a test string from the default translation file.
+
+# How to use your own translation file? #
+
+You can create your own JSON file with translations, import it into your application, and pass it to SimpleI18n at object creation:
 
 ```
 import SimpleI18n from "simple-i18n";
@@ -43,118 +43,155 @@ const i18n = new SimpleI18n('en-US', translations);
 console.log(i18n.translate('mainpage.title'));
 ```
 
-# How to add translations #
+# Steps to create a translation #
 
-All translated strings should be collected in a single JSON structure. It's recommended to store them in a separate JSON file and import it.
+Translations should be collected in a single JSON file, the following way.
 
-The JSON tree contains all translations for all available languages. Each key in the root is a language code like `en-US` or `fr-FR`. Under each key there's a complex structure. It may look like this:
+## Step 1: Define languages ##
+
+Create a blank JSON file, and add the languages you'd like to use:
+
+```
+{
+    "en-US": {},
+    "en-UK": {},
+    "de-DE": {},
+    "es-ES": {},
+    "es-MX": {}
+}
+```
+
+## Step 2: Define locales ##
+
+Each language must have an `i18n` subnode with locale settings. Here is a sample.
 
 ```
 "en-US": {                                                // Language code
     "i18n": {
-        "locale": {                                       // Locale data
-            "currencyCode": "USD",
-            "currencySymbol": "$",
-            "dateFormat": "MM/DD/YYYY",
-            "decimalSeparator": ".",
-            "thousandsSeparator": ","
-        },
-        "name_english": "English (US)",                   //  Name of the language in English
-        "name_native": "English (US)"                     //  Name of the language in the language itself
+        "currencyCode": "USD",                            // Currency code
+        "currencySymbol": "$",                            // Currency symbol
+        "dateFormat": "MM/DD/YYYY",                       // Date format
+        "decimalSeparator": ".",                          // Decimal separator
+        "thousandsSeparator": ","                         // Thousands separator
+        "fallback": null,                                 //  Fallback - see next chapter
+        "nameEnglish": "English (US)",                   //  Name of the language in English
+        "nameNative": "English (US)"                     //  Name of the language in the language
+    }
+}
+```
+
+If you omit this information, `simple-i18n` will fall back to US English locale.
+
+## Step 3: Define fallbacks ##
+
+Some languages are used in multiple countries. You might still need to define them separately due to locale differences. For example, French and Québecois speak the same language, but use a different date format, currency and decimal separator.
+
+The `i18n.fallback` node contains the code of the language to fall back to. For example, for Québecois French (`fr-CA`) you can enter `fr-FR`. If `simple-i18n` finds a fallback value, it will display translations in the fallback language (if it exists). 
+
+In the example above, the `en-US` language setting will fall back to the translation strings used in `en-UK`. There's no need to define any translations in the `en-US` locale.
+
+## Step 4: Add translation strings ##
+
+Translation strings are defined as key-value pairs. For example:
+
+```
+"en-UK": {
+    "pageTitle": "Hello, this is my website!",
+    "loginButton": "Log in",
+    "logoutButton": "Log out"
+}
+```
+
+To display a translated string:
+
+```
+import { SimpleI18n } from "@tomcatmwi/simplei18n";
+import i18n from "./assets/i18n.json";
+
+const i18n = new SimpleI18n(i18n, 'en-UK');
+
+console.log(i18n.translate('pageTitle'));
+```
+
+You can organize your strings into multi-level nodes.
+
+```
+"en-UK": {
+    "loginPage": {
+        "pageTitle": "Hello, this is my website!",
+        "buttons": {
+            "loginButton": "Log in",
+            "logoutButton": "Log out"
+        }
     },
-
-    "test": "This is an English string",                  //  Translations
-    "hello": "Hello, {{ name }}!"
+    "mainPage": {
+        ...
+    }
 }
 ```
 
-The `i18n` node is mandatory under each entry and contains locale information. The currently selected locale can be retrieved by the read-only `currentLocale` property.
-
-Translations are key-value pairs. The key is an asset ID, and the value is a string. You can use the asset ID to refer to the string when calling the `translate()` method.
-
-Placeholders between double curly braces can be inserted into translated strings for dynamic values such as a name in a greeting.
-
-You can add an optional `fallback` value to `i18n` if you want a language to use translations from another one, but with a different locale. For example you may have French language, but European French and Canadian French people use different currency, number separators and date format. In this case create a separate `fr-FR` and `fr-CA` language, configure locales, then add `"fallback": "fr-FR"` to French Canadian. As a result, SimpleI18n will switch locale when changing from French to Canadian French, but the translations remain the same.
-
-For a working example of a translation file, see `i18n_default.json`.
-
-To easily edit translations I suggest using the free editor Loco under https://localise.biz. Export your project as "JSON, Single/Multi-language". If you use fallbacks, also set "Translated" under Settings, so you won't get a ton of unnecessary empty strings for a language you don't actually use.
-
-# Properties #
-
-## language ##
-Sets the current language and also changes the locale. For example, to switch to Russian:
+In this case, you can refer to your strings with a path string:
 
 ```
-i18n.currentLanguage = 'ru-RU';
-console.log(i18n.language);
-```
-```
-"ru-RU"
+console.log(i18n.translate('loginPage.buttons.loginButton'));
 ```
 
-In some frameworks like React you may have to trigger a DOM update to see your content changing.
+## Dynamic values ##
 
-If the selected language isn't in the translation file, SimpleI18n will fall back to the default language.
-
-## locale ##
-
-Returns the current locale. Read only. To set the locale change the language. Example:
+If you want to display a dynamic value, you can use double curly braces:
 
 ```
-console.log(i18n.locale);
-```
-```
-{
-    "currencyCode": "USD",
-    "currencySymbol": "$",
-    "dateFormat": "MM/DD/YYYY",
-    "decimalSeparator": ".",
-    "thousandsSeparator": ","
+"en-UK": {
+    "gasPrice": "The price of gas is £ {{ priceValue }} today.
 }
 ```
 
-## languages ##
-
-Returns available languages as an array. Example:
+You can replace placeholders by specifying a key-value list as a second argument:
 
 ```
-console.log(i18n.languages);
-```
-```
-0: {id: "en-US", name_english: "English (US)", name_native: "English (US)", default: true, fallback: null}
-1: {id: "fr-CA", name_english: "French (CA)", name_native: "Français (CA)", default: false, fallback: "fr-FR"}
-2: {id: "fr-FR", name_english: "French (FR)", name_native: "Français (FR)", default: false, fallback: null}
+i18n.translate('gasPrice', { priceValue: 3000 });
 ```
 
-# Methods #
+Alas, `SimpleI18n` doesn't currently offer built-in number or date formatting methods, but it's a plan for the future.
 
-## translate(assetId: string, values?: any) ##
+# Is there some tool to create translation files? #
 
-Returns a translated string based on an asset ID.
+Yes, there is! I am using `https://localise.biz` for this purpose.
 
-```
-console.log(i18n.translate('test'));
-```
-```
-"This is an English string"
-```
+### Very quick instructions ###
 
-You can pass values in the `values` argument as key-value pairs to replace placeholders.
+Create a project, add your translations. 
 
-```
-console.log(i18n.translate('hello', { name: 'Kevin' }));
-```
-```
-"Hello, Kevin!"
-```
+If you wish to build a multi-level JSON file, use periods to specify node paths as Asset ID. Example: `loginPage.buttons.loginButton`.
 
-# Events #
+You can also add locale values as `i18n.currencyCode`, `i18n.currencySymbol`, etc., so you won't need to add them manually later.
 
-## switchLanguage ##
+Click the wrench icon to the right, select `Export the whole project`. Use the following settings:
 
-Triggered when the language was successfully changed. Returns the current language code.
+- Locales: Multiple (select all languages)
+- Fallback: None
+- File format: JSON, simple (multi-language)
+- Settings:
+  - Index: auto
+  - Order: Asset ID
+  - Status: Translated
 
-## switchLocale ##
+The *Status* setting is important if you use fallback languages. If it's on *Auto*, untranslated strings will be exported, and they'll unnecessarily increase the size of your JSON file.
 
-Triggered when the locale was successfully changed. Returns the language code of the locale used.
+# Object properties and methods #
+
+## Properties ##
+
+### language ###
+The language code of the currently selected language.
+
+### locale ###
+The currently selected locale. Read-only.
+
+### languages ###
+Currently available languages. Read-only.
+
+## Methods ##
+
+### translate(assetID: string, values: object) ###
+Returns the translation of a given asset ID.
