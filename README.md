@@ -14,7 +14,7 @@ Supports:
 
 Install the package with npm:
 
-`npm i @tomcatmwi/simple-i18n`
+`npm i @tomcatmwi/simple-i18n `
 
 # How to use #
 
